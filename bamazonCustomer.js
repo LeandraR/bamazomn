@@ -1,7 +1,7 @@
-let mysql = require('mysql');
-let inquire = require('inquirer');
+var mysql = require('mysql');
+var inquire = require('inquirer');
 
-let connection = mysql.createConnection({
+var connection = mysql.createConnection({
     host: "localhost",
     password: 'password',
     user: 'root',
@@ -25,15 +25,13 @@ connection.query(get, function (err, result) {
         console.log(result[i].item_id + ". " + result[i].product_name + " $" + result[i].price);
     }
     purchase();
-    // connection.end();
 });
 
 
 function purchase() {
     inquire.prompt([{
-            type: 'list',
-            choices: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-            message: 'Which item would you like to buy?',
+            type: 'input',
+            message: 'Which item would you like to buy? Type in the ID',
             name: 'id'
         },
         {
@@ -55,11 +53,12 @@ function purchase() {
 
             var cost = result[0].price;
             var itemChosen = result[0].product_name;
+            var stock = result[0].stock_quantity;
 
-            if (result[0].stock_quantity < quantity) {
+            if (stock < quantity) {
                 console.log('Sorry, insufficient quantity in stock!')
             } else {
-                connection.query('UPDATE products SET stock_quantity = ' + (parseInt(result[0].stock_quantity) - quantity) + " WHERE item_id =" + product + ";", function (err, result) {
+                connection.query('UPDATE products SET stock_quantity = ' + (parseInt(stock) - quantity) + " WHERE item_id =" + product + ";", function (err, result) {
                     if (err) {
                         console.log(err)
                     };
